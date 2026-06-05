@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import type { Activo } from '../types';
 
 const toRow = (a: Activo) => ({
@@ -24,25 +23,22 @@ const toRow = (a: Activo) => ({
   'Última Modificación':    a.fecha_ultima_mod,
 });
 
-export const exportToExcel = (activos: Activo[], filename = 'REVI_Assets') => {
-  const data = activos.map(toRow);
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Inventario AF');
-
-  if (data.length > 0) {
-    ws['!cols'] = Object.keys(data[0]).map((key) => ({
-      wch: Math.max(key.length, ...data.map((row) => String(row[key as keyof typeof row] ?? '').length)),
-    }));
-  }
-
-  XLSX.writeFile(wb, `${filename}_${new Date().toISOString().slice(0, 10)}.xlsx`);
-};
-
 export const exportToCSV = (activos: Activo[], filename = 'REVI_Assets') => {
-  const data = activos.map(toRow);
-  const ws = XLSX.utils.json_to_sheet(data);
-  const csv = XLSX.utils.sheet_to_csv(ws);
+  const rows = activos.map(toRow);
+  if (rows.length === 0) return;
+
+  const headers = Object.keys(rows[0]);
+
+  const csv = [
+    headers.map(h => `"${h}"`).join(','),
+    ...rows.map(row =>
+      headers.map(key => {
+        const val = String(row[key as keyof typeof row] ?? '');
+        return `"${val.replace(/"/g, '""')}"`;
+      }).join(',')
+    )
+  ].join('\n');
+
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
