@@ -39,7 +39,7 @@ export default function AssetList() {
   const loadDuplicados = async () => {
     try {
       const res = await getDuplicados();
-      setDuplicadosIds(new Set(res.data.map(a => a.id)));
+      setDuplicadosIds(new Set(res.data.map(a => a.id as string)));
     } catch {
       console.error('Error cargando duplicados');
     }
@@ -75,7 +75,7 @@ export default function AssetList() {
     // Aplicar filtros por URL
     if (filterParam === 'sin_foto') return matchSearch && !a.tiene_foto;
     if (filterParam === 'por_validar') return matchSearch && !a.validado;
-    if (filterParam === 'duplicados') return matchSearch && duplicadosIds.has(a.id);
+    if (filterParam === 'duplicados') return matchSearch && duplicadosIds.has(a.id as string);
 
     // Filtro normal
     return matchSearch &&
@@ -141,7 +141,7 @@ export default function AssetList() {
                   </span>
                   {!a.validado && <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block" />}
                   {!a.tiene_foto && <span className="w-1.5 h-1.5 rounded-full bg-gray-300 inline-block" title="Sin foto" />}
-                  {duplicadosIds.has(a.id) && (
+                  {duplicadosIds.has(a.id as string) && (
                     <span className="text-xs font-bold text-white bg-red-600 px-2 py-0.5 rounded">DUPLICADO</span>
                   )}
                 </div>
@@ -149,7 +149,7 @@ export default function AssetList() {
                 <p className="text-xs text-gray-500 mt-0.5">
                   {a.area}{a.marca ? ` · ${a.marca}` : ''}{a.modelo ? ` ${a.modelo}` : ''}
                 </p>
-                {duplicadosIds.has(a.id) && a.codigo_nuevo && (
+                {duplicadosIds.has(a.id as string) && a.codigo_nuevo && (
                   <p className="text-xs text-red-600 font-semibold mt-1">Código: {a.codigo_nuevo}</p>
                 )}
               </div>

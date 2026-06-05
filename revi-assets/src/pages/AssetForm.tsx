@@ -45,7 +45,7 @@ export default function AssetForm() {
   const isEdit     = !!id;
   const [step, setStep]     = useState(1);
   const [foto, setFoto]     = useState<string | null>(null);
-  const [fotoId, setFotoId] = useState<string | null>(null);
+  const [, setFotoId] = useState<string | null>(null);
   const [saving, setSaving]   = useState(false);
   const [apiError, setApiError] = useState('');
   const [queued, setQueued]   = useState(false);

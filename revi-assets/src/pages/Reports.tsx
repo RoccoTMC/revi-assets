@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { FileSpreadsheet, FileText, BarChart3, CheckCircle, Loader2 } from 'lucide-react';
+import { FileText, BarChart3, CheckCircle, Loader2 } from 'lucide-react';
 import { getActivos } from '../services/apiService';
-import { exportToExcel, exportToCSV } from '../services/exportService';
+import { exportToCSV } from '../services/exportService';
 
 const REPORTES = [
   { id: 'todos',         label: 'Inventario Completo',    desc: 'Todos los activos' },
@@ -37,15 +37,14 @@ export default function Reports() {
     return res.data;
   };
 
-  const handleExport = async (tipo: 'xlsx' | 'csv') => {
+  const handleExport = async () => {
     setExporting(true);
     setResultado(null);
     setError('');
     try {
       const activos = await fetchActivos();
       const nombre  = REPORTES.find(r => r.id === reporteId)?.label.replace(/\s+/g, '_') ?? 'Reporte';
-      if (tipo === 'xlsx') exportToExcel(activos, `REVI_${nombre}`);
-      else                 exportToCSV(activos,   `REVI_${nombre}`);
+      exportToCSV(activos, `REVI_${nombre}`);
       setResultado(activos.length);
     } catch {
       setError('Error generando el reporte. Verifica la conexión al servidor.');
@@ -77,14 +76,10 @@ export default function Reports() {
       <div>
         <label className="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Formato</label>
         <div className="space-y-2">
-          <button onClick={() => handleExport('xlsx')} disabled={exporting}
+          <button onClick={() => handleExport()} disabled={exporting}
             className="w-full bg-green-600 text-white rounded-xl py-4 font-semibold flex items-center justify-center gap-3 active:bg-green-700 disabled:opacity-50">
-            {exporting ? <Loader2 size={22} className="animate-spin" /> : <FileSpreadsheet size={22} />}
-            Exportar Excel (.xlsx)
-          </button>
-          <button onClick={() => handleExport('csv')} disabled={exporting}
-            className="w-full bg-white border border-gray-300 text-gray-700 rounded-xl py-4 font-semibold flex items-center justify-center gap-3 active:bg-gray-50 disabled:opacity-50">
-            <FileText size={22} /> Exportar CSV
+            {exporting ? <Loader2 size={22} className="animate-spin" /> : <FileText size={22} />}
+            Exportar CSV
           </button>
         </div>
       </div>
