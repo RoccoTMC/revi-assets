@@ -62,8 +62,16 @@ app.use((req, _res, next) => {
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Permitir: sin origin (requests de CLI, postman, etc), localhost en cualquier puerto, o env variable
-    if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('172.20')) {
+    // Permitir: sin origin (requests de CLI, postman, etc), localhost, IPs locales, o env variable
+    if (!origin) {
+      callback(null, true);
+    } else if (
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.includes('172.20') ||
+      origin === `http://${process.env.SERVER_IP || '134.122.33.171'}` ||
+      origin === `https://${process.env.SERVER_IP || '134.122.33.171'}`
+    ) {
       callback(null, true);
     } else if (process.env.CORS_ORIGIN && origin === process.env.CORS_ORIGIN) {
       callback(null, true);
